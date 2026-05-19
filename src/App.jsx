@@ -261,6 +261,7 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [aiText, setAiText] = useState("");
   const [activeSection, setActiveSection] = useState("home");
+  const [selectedProject, setSelectedProject] = useState(null);
   const skillsRef = useRef(null);
   const skillsInView = useInView(skillsRef);
   const heroTitle = useTypewriter("Kanishkumar P", 70);
@@ -321,6 +322,14 @@ export default function App() {
         }
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(28px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(20px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes gridScroll {
@@ -752,7 +761,22 @@ export default function App() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: "24px" }}>
             {PROJECTS.map((p) => (
               <div key={p.id} className="project-card"
-                style={!darkMode ? { background: "#fff", border: "1px solid #e2e8f0" } : {}}
+                onClick={() => setSelectedProject(p)}
+                style={{
+                  ...!darkMode ? { background: "#fff", border: "1px solid #e2e8f0" } : {},
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  transform: "scale(1)",
+                  "&:hover": { transform: "scale(1.02)" }
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.02)";
+                  e.currentTarget.style.boxShadow = `0 12px 24px ${p.color}40`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
                   <span style={{
@@ -776,22 +800,161 @@ export default function App() {
                     <span key={t} className="skill-chip" style={{ borderColor: p.color + "40", color: p.color, background: p.color + "10" }}>{t}</span>
                   ))}
                 </div>
-                <a href={p.link} target="_blank" rel="noreferrer"
-                  style={{
-                    fontFamily: "'JetBrains Mono',monospace", fontSize: "12px",
-                    color: p.color, textDecoration: "none", letterSpacing: "0.08em",
-                    display: "flex", alignItems: "center", gap: "6px",
-                    transition: "gap 0.2s",
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.gap = "12px"}
-                  onMouseLeave={e => e.currentTarget.style.gap = "6px"}
-                >
-                  View Project →
-                </a>
+                <div style={{ display: "flex", gap: "12px" }}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedProject(p);
+                    }}
+                    style={{
+                      fontFamily: "'JetBrains Mono',monospace", fontSize: "12px",
+                      color: "#fff", textDecoration: "none", letterSpacing: "0.08em",
+                      padding: "8px 14px", borderRadius: "6px",
+                      background: p.color, border: "none", cursor: "pointer",
+                      transition: "all 0.2s",
+                      fontWeight: 600,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = `0 0 20px ${p.color}80`;
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
+                  >
+                    📱 View Details
+                  </button>
+                  <a href={p.link} target="_blank" rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      fontFamily: "'JetBrains Mono',monospace", fontSize: "12px",
+                      color: p.color, textDecoration: "none", letterSpacing: "0.08em",
+                      display: "flex", alignItems: "center", gap: "6px",
+                      transition: "gap 0.2s",
+                      padding: "8px 14px",
+                      border: `1px solid ${p.color}60`,
+                      borderRadius: "6px",
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.gap = "10px";
+                      e.currentTarget.style.background = p.color + "15";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.gap = "6px";
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    View Code →
+                  </a>
+                </div>
               </div>
             ))}
           </div>
         </section>
+
+        {/* ── PROJECT MODAL ── */}
+        {selectedProject && (
+          <div
+            onClick={() => setSelectedProject(null)}
+            style={{
+              position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 2000, backdropFilter: "blur(10px)", animation: "fadeIn 0.3s ease",
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: darkMode ? "#0f172a" : "#fff",
+                borderRadius: "16px", padding: "40px", maxWidth: "600px",
+                width: "90%", border: `2px solid ${selectedProject.color}40`,
+                animation: "slideUp 0.3s ease",
+                maxHeight: "80vh", overflowY: "auto",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "20px" }}>
+                <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "1.8rem", color: selectedProject.color, margin: 0 }}>
+                  {selectedProject.title}
+                </h2>
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  style={{
+                    background: "transparent", border: "none", fontSize: "28px",
+                    cursor: "pointer", padding: "0", color: darkMode ? "#e2e8f0" : "#0f172a",
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <p style={{ fontSize: "1rem", lineHeight: "1.8", color: darkMode ? "rgba(226,232,240,0.7)" : "#475569", marginBottom: "20px" }}>
+                {selectedProject.description}
+              </p>
+
+              <div style={{ marginBottom: "24px" }}>
+                <h4 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, color: darkMode ? "#e2e8f0" : "#0f172a", marginBottom: "12px", fontSize: "0.9rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                  Technologies Used
+                </h4>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                  {selectedProject.tech.map((t) => (
+                    <span key={t} style={{
+                      padding: "6px 12px", borderRadius: "6px",
+                      background: selectedProject.color + "20",
+                      color: selectedProject.color,
+                      fontFamily: "'JetBrains Mono',monospace", fontSize: "12px",
+                      fontWeight: 600,
+                    }}>
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "12px" }}>
+                <a href={selectedProject.link} target="_blank" rel="noreferrer"
+                  style={{
+                    flex: 1, padding: "12px 20px", borderRadius: "8px",
+                    background: selectedProject.color, color: "#fff",
+                    textDecoration: "none", fontWeight: 600,
+                    textAlign: "center", fontFamily: "'JetBrains Mono',monospace",
+                    fontSize: "13px", transition: "all 0.2s",
+                    cursor: "pointer", border: "none",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = `0 8px 20px ${selectedProject.color}60`;
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  🔗 View on GitHub
+                </a>
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  style={{
+                    flex: 1, padding: "12px 20px", borderRadius: "8px",
+                    background: "transparent", color: selectedProject.color,
+                    border: `1px solid ${selectedProject.color}60`,
+                    fontWeight: 600, fontFamily: "'JetBrains Mono',monospace",
+                    fontSize: "13px", cursor: "pointer",
+                    transition: "all 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = selectedProject.color + "15";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── CONTACT ── */}
         <section id="contact" style={{ maxWidth: "1100px", margin: "0 auto", padding: "80px 40px 120px", position: "relative", zIndex: 1 }}>
