@@ -65,8 +65,14 @@ function getAIResponse(msg) {
 
 function useTypewriter(text, speed = 35) {
   const [displayed, setDisplayed] = useState("");
+  const prevTextRef = useRef("");
+
   useEffect(() => {
-    setDisplayed("");
+    if (prevTextRef.current !== text) {
+      prevTextRef.current = text;
+      setDisplayed("");
+    }
+
     if (!text) return;
     let i = 0;
     const timer = setInterval(() => {
@@ -75,7 +81,7 @@ function useTypewriter(text, speed = 35) {
       if (i >= text.length) clearInterval(timer);
     }, speed);
     return () => clearInterval(timer);
-  }, [text]);
+  }, [text, speed]);
   return displayed;
 }
 
@@ -88,7 +94,7 @@ function useInView(ref) {
     );
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
-  }, []);
+  }, [ref]);
   return inView;
 }
 
@@ -570,6 +576,9 @@ export default function App() {
               <a href="https://github.com/Kanishkumarp" target="_blank" rel="noreferrer" className="cta-btn cta-primary">
                 View GitHub →
               </a>
+              <a href="https://www.linkedin.com/in/kanishkumarp" target="_blank" rel="noreferrer" className="cta-btn cta-primary">
+                View LinkedIn →
+              </a>
               <a href="mailto:kanishkumar940@gmail.com" className="cta-btn cta-outline">
                 Hire Me
               </a>
@@ -809,6 +818,13 @@ export default function App() {
                 <div style={{ fontSize: "15px" }}>github.com/Kanishkumarp</div>
               </div>
             </a>
+            <a href="https://www.linkedin.com/in/kanishkumarp" target="_blank" rel="noreferrer" className="contact-link" style={!darkMode ? { background: "#f8fafc", borderColor: "#e2e8f0" } : {}}>
+              <span style={{ fontSize: "22px" }}>🔗</span>
+              <div>
+                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "11px", color: "#38bdf8", letterSpacing: "0.1em", marginBottom: "2px" }}>LINKEDIN</div>
+                <div style={{ fontSize: "15px" }}>linkedin.com/in/kanishkumarp</div>
+              </div>
+            </a>
           </div>
 
           <div style={{ marginTop: "50px", paddingTop: "32px", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
@@ -818,7 +834,7 @@ export default function App() {
           </div>
         </section>
 
-        <ChatBox />
+        <ChatBox />question
       </div>
     </>
   );
