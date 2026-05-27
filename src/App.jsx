@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import  { useState, useEffect, useRef } from "react";
 
 const SKILLS = [
   { name: "React JS", level: 90, icon: "⚛" },
@@ -20,7 +20,6 @@ const PROJECTS = [
       "AI-powered battery terminal detection system using Raspberry Pi and camera module. Real-time computer vision pipeline with 94% accuracy.",
     tech: ["Python", "AI", "Raspberry Pi", "OpenCV"],
     color: "#00ffa3",
-    link: "https://github.com/Kanishkumarp",
   },
   {
     id: "02",
@@ -29,7 +28,6 @@ const PROJECTS = [
       "Modern React application with Axios API integration, dynamic state management, and a fully responsive UI designed for performance.",
     tech: ["React", "Axios", "JavaScript", "REST API"],
     color: "#38bdf8",
-    link: "https://github.com/Kanishkumarp",
   },
   {
     id: "03",
@@ -38,7 +36,6 @@ const PROJECTS = [
       "Personal portfolio website with dark mode, AI features, and smooth animations. Built with Vite for lightning-fast performance.",
     tech: ["React", "CSS", "Vite", "AI"],
     color: "#f472b6",
-    link: "https://github.com/Kanishkumarp",
   },
 ];
 
@@ -262,9 +259,37 @@ export default function App() {
   const [aiText, setAiText] = useState("");
   const [activeSection, setActiveSection] = useState("home");
   const [selectedProject, setSelectedProject] = useState(null);
+  const [showHireForm, setShowHireForm] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formStatus, setFormStatus] = useState("");
   const skillsRef = useRef(null);
   const skillsInView = useInView(skillsRef);
   const heroTitle = useTypewriter("Kanishkumar P", 70);
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText("kanishkumar940@gmail.com");
+      setAiText("Email copied to clipboard!");
+    } catch (error) {
+      setAiText("Copy failed. Please copy the email manually.");
+      console.error("Clipboard copy failed:", error);
+    }
+  };
+
+  const handleHireSubmit = () => {
+    const { name, email, message } = formData;
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setFormStatus("Please fill all fields");
+      return;
+    }
+    console.log("Hire Form Submitted:", formData);
+    setFormStatus("✓ Thanks! I'll get back to you soon.");
+    setTimeout(() => {
+      setShowHireForm(false);
+      setFormData({ name: "", email: "", message: "" });
+      setFormStatus("");
+    }, 2000);
+  };
 
   useEffect(() => {
     const handler = () => {
@@ -588,9 +613,9 @@ export default function App() {
               <a href="https://www.linkedin.com/in/kanishkumarp" target="_blank" rel="noreferrer" className="cta-btn cta-primary">
                 View LinkedIn →
               </a>
-              <a href="mailto:kanishkumar940@gmail.com" className="cta-btn cta-outline">
+              <button onClick={() => setShowHireForm(true)} className="cta-btn cta-outline" type="button">
                 Hire Me
-              </a>
+              </button>
             </div>
           </div>
 
@@ -767,7 +792,6 @@ export default function App() {
                   cursor: "pointer",
                   transition: "all 0.3s ease",
                   transform: "scale(1)",
-                  "&:hover": { transform: "scale(1.02)" }
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "scale(1.02)";
@@ -825,28 +849,6 @@ export default function App() {
                   >
                     📱 View Details
                   </button>
-                  <a href={p.link} target="_blank" rel="noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    style={{
-                      fontFamily: "'JetBrains Mono',monospace", fontSize: "12px",
-                      color: p.color, textDecoration: "none", letterSpacing: "0.08em",
-                      display: "flex", alignItems: "center", gap: "6px",
-                      transition: "gap 0.2s",
-                      padding: "8px 14px",
-                      border: `1px solid ${p.color}60`,
-                      borderRadius: "6px",
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.gap = "10px";
-                      e.currentTarget.style.background = p.color + "15";
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.gap = "6px";
-                      e.currentTarget.style.background = "transparent";
-                    }}
-                  >
-                    View Code →
-                  </a>
                 </div>
               </div>
             ))}
@@ -912,26 +914,6 @@ export default function App() {
               </div>
 
               <div style={{ display: "flex", gap: "12px" }}>
-                <a href={selectedProject.link} target="_blank" rel="noreferrer"
-                  style={{
-                    flex: 1, padding: "12px 20px", borderRadius: "8px",
-                    background: selectedProject.color, color: "#fff",
-                    textDecoration: "none", fontWeight: 600,
-                    textAlign: "center", fontFamily: "'JetBrains Mono',monospace",
-                    fontSize: "13px", transition: "all 0.2s",
-                    cursor: "pointer", border: "none",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = `0 8px 20px ${selectedProject.color}60`;
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = "none";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  🔗 View on GitHub
-                </a>
                 <button
                   onClick={() => setSelectedProject(null)}
                   style={{
@@ -967,13 +949,13 @@ export default function App() {
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "14px", maxWidth: "480px" }}>
-            <a href="mailto:kanishkumar940@gmail.com" className="contact-link" style={!darkMode ? { background: "#f8fafc", borderColor: "#e2e8f0" } : {}}>
+            <button onClick={copyEmail} className="contact-link" style={!darkMode ? { background: "#f8fafc", borderColor: "#e2e8f0" } : {}} type="button">
               <span style={{ fontSize: "22px" }}>📧</span>
               <div>
                 <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "11px", color: "#38bdf8", letterSpacing: "0.1em", marginBottom: "2px" }}>EMAIL</div>
                 <div style={{ fontSize: "15px" }}>kanishkumar940@gmail.com</div>
               </div>
-            </a>
+            </button>
             <a href="https://github.com/Kanishkumarp" target="_blank" rel="noreferrer" className="contact-link" style={!darkMode ? { background: "#f8fafc", borderColor: "#e2e8f0" } : {}}>
               <span style={{ fontSize: "22px" }}>💻</span>
               <div>
@@ -997,7 +979,136 @@ export default function App() {
           </div>
         </section>
 
-        <ChatBox />question
+        {/* ── HIRE ME MODAL ── */}
+        {showHireForm && (
+          <div
+            onClick={() => setShowHireForm(false)}
+            style={{
+              position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 2000, backdropFilter: "blur(10px)", animation: "fadeIn 0.3s ease",
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: darkMode ? "#0f172a" : "#fff",
+                borderRadius: "16px", padding: "40px", maxWidth: "500px",
+                width: "90%", border: "2px solid rgba(56,189,248,0.4)",
+                animation: "slideUp 0.3s ease",
+              }}
+            >
+              <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: "1.8rem", color: "#38bdf8", margin: "0 0 24px 0" }}>
+                Let's work together
+              </h2>
+
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", fontFamily: "'JetBrains Mono',monospace", fontSize: "11px", color: "#38bdf8", letterSpacing: "0.1em", marginBottom: "8px" }}>
+                  YOUR NAME
+                </label>
+                <input
+                  type="text"
+                  placeholder="John Doe"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  style={{
+                    width: "100%", padding: "12px 14px", borderRadius: "8px",
+                    background: darkMode ? "rgba(255,255,255,0.05)" : "#f0f9ff",
+                    border: "1px solid rgba(56,189,248,0.2)", color: darkMode ? "#e2e8f0" : "#0f172a",
+                    fontFamily: "'DM Sans',sans-serif", fontSize: "14px", outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", fontFamily: "'JetBrains Mono',monospace", fontSize: "11px", color: "#38bdf8", letterSpacing: "0.1em", marginBottom: "8px" }}>
+                  YOUR EMAIL
+                </label>
+                <input
+                  type="email"
+                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  style={{
+                    width: "100%", padding: "12px 14px", borderRadius: "8px",
+                    background: darkMode ? "rgba(255,255,255,0.05)" : "#f0f9ff",
+                    border: "1px solid rgba(56,189,248,0.2)", color: darkMode ? "#e2e8f0" : "#0f172a",
+                    fontFamily: "'DM Sans',sans-serif", fontSize: "14px", outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "24px" }}>
+                <label style={{ display: "block", fontFamily: "'JetBrains Mono',monospace", fontSize: "11px", color: "#38bdf8", letterSpacing: "0.1em", marginBottom: "8px" }}>
+                  MESSAGE
+                </label>
+                <textarea
+                  placeholder="Tell me about the opportunity..."
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  style={{
+                    width: "100%", padding: "12px 14px", borderRadius: "8px", minHeight: "120px",
+                    background: darkMode ? "rgba(255,255,255,0.05)" : "#f0f9ff",
+                    border: "1px solid rgba(56,189,248,0.2)", color: darkMode ? "#e2e8f0" : "#0f172a",
+                    fontFamily: "'DM Sans',sans-serif", fontSize: "14px", outline: "none",
+                    resize: "none", boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              {formStatus && (
+                <div style={{
+                  padding: "12px 16px", borderRadius: "8px",
+                  background: formStatus.includes("✓") ? "rgba(0,255,163,0.1)" : "rgba(255,107,107,0.1)",
+                  color: formStatus.includes("✓") ? "#00ffa3" : "#ff6b6b",
+                  fontFamily: "'DM Sans',sans-serif", fontSize: "13px",
+                  marginBottom: "16px", textAlign: "center",
+                }}>{formStatus}</div>
+              )}
+
+              <div style={{ display: "flex", gap: "12px" }}>
+                <button
+                  onClick={handleHireSubmit}
+                  style={{
+                    flex: 1, padding: "14px 20px", borderRadius: "8px",
+                    background: "linear-gradient(135deg,#38bdf8,#00ffa3)",
+                    color: "#0f172a", border: "none", fontWeight: 600,
+                    fontFamily: "'JetBrains Mono',monospace", fontSize: "13px",
+                    cursor: "pointer", transition: "all 0.2s", textTransform: "uppercase",
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+                >
+                  Send Message
+                </button>
+                <button
+                  onClick={() => setShowHireForm(false)}
+                  style={{
+                    flex: 1, padding: "14px 20px", borderRadius: "8px",
+                    background: "transparent", color: "#38bdf8",
+                    border: "1px solid rgba(56,189,248,0.5)", fontWeight: 600,
+                    fontFamily: "'JetBrains Mono',monospace", fontSize: "13px",
+                    cursor: "pointer", transition: "all 0.2s", textTransform: "uppercase",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(56,189,248,0.1)";
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <ChatBox />
       </div>
     </>
   );
